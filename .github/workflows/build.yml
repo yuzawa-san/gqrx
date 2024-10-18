@@ -31,7 +31,6 @@ jobs:
             libboost-headers
             mesa-libgl-devel-cos6-x86_64
             pybind11
-            pulseaudio
             qt6-main
             soapysdr-module-lms7
             soapysdr-module-plutosdr
