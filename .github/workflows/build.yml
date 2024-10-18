@@ -67,7 +67,10 @@ jobs:
           path: Gqrx-*.AppImage
   macos:
     name: MacOS
-    runs-on: macos-13
+    strategy:
+      matrix:
+        os: [macos-13, macos-13-arm64]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Check for Secret availability
         id: secret-check
@@ -206,7 +209,7 @@ jobs:
       - name: Save artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gqrx-macos-${{ github.run_id }}
+          name: gqrx-${{ matrix.os }}-${{ github.run_id }}
           path: Gqrx-*.dmg
   windows:
     runs-on: windows-latest
