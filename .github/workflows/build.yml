@@ -70,12 +70,11 @@ jobs:
     strategy:
       matrix:
         arch: [x86_64, arm64]
-    # NOTE: please refer to these documents
-    # https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners
-    # https://github.blog/news-insights/product-news/introducing-the-new-apple-silicon-powered-m1-macos-larger-runner-for-github-actions/
-    # when changing to macos-14, the dual builds will no longer work since that is arm64 only
-    # https://github.com/actions/runner-images/issues/9741
-    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-13' || 'macos-13-large' }}
+    # NOTE: in the free tier, `macos-13` is x86_64 only, while `macos-14` is arm64 only.
+    # when we increase the baseline to 14 eventually, we will be losing x86_64 support,
+    # so hopefully all of the macs will be arm64 by then.
+    # see https://github.com/actions/runner-images/issues/9741
+    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-13' || 'macos-14' }}
     steps:
       - name: Check for Secret availability
         id: secret-check
