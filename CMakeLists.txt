@@ -35,6 +35,8 @@ set(BUILDTYPE ${CMAKE_BUILD_TYPE})
 string(TOUPPER ${BUILDTYPE} BUILDTYPE)
 add_definitions(-D${BUILDTYPE})
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
+
 # We have some custom .cmake scripts not in the official distribution.
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
