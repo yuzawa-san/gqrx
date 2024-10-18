@@ -14,8 +14,6 @@ mkdir -p Gqrx.app/Contents/soapy-modules
 <dict>
   <key>NSPrincipalClass</key>
   <string>NSApplication</string>
-  <key>CFBundleGetInfoString</key>
-  <string>Gqrx</string>
   <key>CFBundleExecutable</key>
   <string>gqrx</string>
   <key>CFBundleIdentifier</key>
