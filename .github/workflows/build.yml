@@ -66,7 +66,7 @@ jobs:
           fetch-depth: 0
       - name: Configure
         shell: micromamba-shell {0}
-        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }} -DQt6_DIR=${{ steps.setup-micromamba.outputs.environment-path }}/lib/cmake/Qt6 --debug-find ..
+        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }} -DQT_HOST_PATH=${{ steps.setup-micromamba.outputs.environment-path }}/lib/qt6 --debug-find ..
       - name: Compile
         shell: micromamba-shell {0}
         working-directory: build
