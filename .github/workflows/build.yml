@@ -19,12 +19,11 @@ jobs:
         run: |
           # for https://github.com/actions/runner-images/issues/9272
           sudo chown -R runner:admin /usr/local/
-          sudo chmod -R 777 /usr/local/
           brew update
           brew install --HEAD librtlsdr
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
-          brew install soapyremote -v
+          sudo brew install soapyremote -v
 
           cd /tmp
           git clone https://github.com/analogdevicesinc/libiio.git
