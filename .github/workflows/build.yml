@@ -4,100 +4,145 @@ on: [push, pull_request]
 
 jobs:
   macos:
-    name: MacOS
-    runs-on: macos-13
-    steps:
-      - name: Check for Secret availability
-        id: secret-check
-        run: |
-          if [ "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" != '' ]; then
-            echo "available=true" >> $GITHUB_OUTPUT;
-          else
-            echo "available=false" >> $GITHUB_OUTPUT;
-          fi
-      - name: Install conda dependencies
-        id: setup-micromamba
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-name: gqrx
-          create-args: >-
-            gnuradio-core
-            gnuradio-osmosdr
-            libboost-headers
-            mesa-libgl-devel-cos6-x86_64
-            pybind11
-            soapysdr-module-lms7
-            soapysdr-module-plutosdr
-            soapysdr-module-remote
-            volk
-      - name: Install dependencies
-        run: |
-          uname -a
-          env
-          brew update
-          brew install dylibbundler qt@6 || true
-      - name: Install Apple certificate
-        if: ${{ steps.secret-check.outputs.available == 'true' }}
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+      name: MacOS
+      runs-on: macos-13
+      steps:
+        - name: Check for Secret availability
+          id: secret-check
+          run: |
+            if [ "${{ secrets.BUILD_CERTIFICATE_BASE64 }}" != '' ]; then
+              echo "available=true" >> $GITHUB_OUTPUT;
+            else
+              echo "available=false" >> $GITHUB_OUTPUT;
+            fi
+        - name: Install dependencies
+          run: |
+            # for https://github.com/actions/runner-images/issues/9272
+            sudo chown -R runner:admin /usr/local/
+            brew update
+            brew install --HEAD librtlsdr
+            brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
+            brew tap pothosware/homebrew-pothos
+            brew install soapyremote
 
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 -d -o $CERTIFICATE_PATH
+            cd /tmp
+            git clone https://github.com/analogdevicesinc/libiio.git
+            cd libiio
+            git checkout v0.23
+            mkdir build
+            cd build
+            cmake ..
+            make -j4
+            sudo make install
 
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+            cd /tmp
+            git clone https://github.com/analogdevicesinc/libad9361-iio.git
+            cd libad9361-iio
+            mkdir build
+            cd build
+            cmake ..
+            make -j4
+            sudo make install
 
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Configure
-        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }}:/usr/local:/usr ..
-      - name: Compile
-        working-directory: build
-        run: make -j4 && otool -l ./src/gqrx
-      - name: Build app bundle
-        run: ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
-      - name: Notarize app bundle
-        if: ${{ steps.secret-check.outputs.available == 'true' }}
-        env:
-          NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
-          NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
-          NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
-        run: |
-          ditto -c -k --keepParent Gqrx.app Gqrx.zip
-          xcrun notarytool submit Gqrx.zip --apple-id "$NOTARIZE_USERNAME" --team-id "$NOTARIZE_TEAM_ID" --password "$NOTARIZE_PASSWORD" --wait
-      - name: Staple app bundle
-        if: ${{ steps.secret-check.outputs.available == 'true' }}
-        run: xcrun stapler staple --verbose Gqrx.app
-      - name: Create DMG
-        run: |
-          GQRX_VERSION=$(<build/version.txt)
-          hdiutil create Gqrx.dmg -srcfolder Gqrx.app -format UDZO -fs HFS+ -volname "Gqrx $GQRX_VERSION"
-      - name: Notarize DMG
-        if: ${{ steps.secret-check.outputs.available == 'true' }}
-        env:
-          NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
-          NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
-          NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
-        run: |
-          xcrun notarytool submit Gqrx.dmg --apple-id "$NOTARIZE_USERNAME" --team-id "$NOTARIZE_TEAM_ID" --password "$NOTARIZE_PASSWORD" --wait
-      - name: Staple DMG
-        if: ${{ steps.secret-check.outputs.available == 'true' }}
-        run: xcrun stapler staple --verbose Gqrx.dmg
-      - name: Rename DMG
-        run: |
-          GQRX_VERSION=$(<build/version.txt)
-          mv Gqrx.dmg Gqrx-$GQRX_VERSION.dmg
-      - name: Save artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: gqrx-macos-${{ github.run_id }}
-          path: Gqrx-*.dmg
+            cd /tmp
+            git clone https://github.com/pothosware/SoapyPlutoSDR.git
+            cd SoapyPlutoSDR
+            mkdir build
+            cd build
+            cmake ..
+            make -j4
+            sudo make install
+
+            cd /tmp
+            cp /Library/Frameworks/iio.framework/iio /usr/local/lib/libiio.dylib
+            install_name_tool -id "/usr/local/lib/libiio.dylib" /usr/local/lib/libiio.dylib
+            cp /Library/Frameworks/ad9361.framework/ad9361 /usr/local/lib/libad9361.dylib
+            install_name_tool -id "/usr/local/lib/libad9361.dylib" /usr/local/lib/libad9361.dylib
+            install_name_tool -delete_rpath /Library/Frameworks /usr/local/lib/libad9361.dylib
+            install_name_tool -change @rpath/iio.framework/Versions/0.23/iio /usr/local/lib/libiio.dylib /usr/local/lib/libad9361.dylib
+            install_name_tool -change @rpath/iio.framework/Versions/0.23/iio /usr/local/lib/libiio.dylib /usr/local/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
+            install_name_tool -change @rpath/ad9361.framework/Versions/0.2/ad9361 /usr/local/lib/libad9361.dylib /usr/local/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
+
+            cd /tmp
+            git clone https://gitea.osmocom.org/sdr/gr-iqbal.git
+            cd gr-iqbal
+            git submodule update --init --recursive
+            mkdir build
+            cd build
+            cmake ..
+            make -j4
+            sudo make install
+
+            cd /tmp
+            git clone https://gitea.osmocom.org/sdr/gr-osmosdr.git
+            cd gr-osmosdr
+            mkdir build
+            cd build
+            cmake -DCMAKE_CXX_FLAGS=-Wno-register ..
+            LIBRARY_PATH=/usr/local/opt/icu4c/lib make -j4
+            sudo make install
+        - name: Install Apple certificate
+          if: ${{ steps.secret-check.outputs.available == 'true' }}
+          env:
+            BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+            P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+            KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          run: |
+            CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+            KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+
+            echo -n "$BUILD_CERTIFICATE_BASE64" | base64 -d -o $CERTIFICATE_PATH
+
+            security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+            security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+            security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+
+            security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+            security list-keychain -d user -s $KEYCHAIN_PATH
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: Configure
+          run: mkdir build && cd build && cmake ..
+        - name: Compile
+          working-directory: build
+          run: make -j4
+        - name: Build app bundle
+          run: ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
+        - name: Notarize app bundle
+          if: ${{ steps.secret-check.outputs.available == 'true' }}
+          env:
+            NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
+            NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
+            NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+          run: |
+            ditto -c -k --keepParent Gqrx.app Gqrx.zip
+            xcrun notarytool submit Gqrx.zip --apple-id "$NOTARIZE_USERNAME" --team-id "$NOTARIZE_TEAM_ID" --password "$NOTARIZE_PASSWORD" --wait
+        - name: Staple app bundle
+          if: ${{ steps.secret-check.outputs.available == 'true' }}
+          run: xcrun stapler staple --verbose Gqrx.app
+        - name: Create DMG
+          run: |
+            GQRX_VERSION=$(<build/version.txt)
+            hdiutil create Gqrx.dmg -srcfolder Gqrx.app -format UDZO -fs HFS+ -volname "Gqrx $GQRX_VERSION"
+        - name: Notarize DMG
+          if: ${{ steps.secret-check.outputs.available == 'true' }}
+          env:
+            NOTARIZE_USERNAME: ${{ secrets.NOTARIZE_USERNAME }}
+            NOTARIZE_TEAM_ID: ${{ secrets.NOTARIZE_TEAM_ID }}
+            NOTARIZE_PASSWORD: ${{ secrets.NOTARIZE_PASSWORD }}
+          run: |
+            xcrun notarytool submit Gqrx.dmg --apple-id "$NOTARIZE_USERNAME" --team-id "$NOTARIZE_TEAM_ID" --password "$NOTARIZE_PASSWORD" --wait
+        - name: Staple DMG
+          if: ${{ steps.secret-check.outputs.available == 'true' }}
+          run: xcrun stapler staple --verbose Gqrx.dmg
+        - name: Rename DMG
+          run: |
+            GQRX_VERSION=$(<build/version.txt)
+            mv Gqrx.dmg Gqrx-$GQRX_VERSION.dmg
+        - name: Save artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: gqrx-macos-${{ github.run_id }}
+            path: Gqrx-*.dmg
