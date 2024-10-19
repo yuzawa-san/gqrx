@@ -63,11 +63,14 @@ jobs:
         with:
           fetch-depth: 0
       - name: Configure
+        shell: micromamba-shell {0}
         run: mkdir build && cd build && cmake -DCMAKE_PREFIX_PATH=${{ steps.setup-micromamba.outputs.environment-path }} ..
       - name: Compile
+        shell: micromamba-shell {0}
         working-directory: build
-        run: make -j4
+        run: make -j4 && otool -l ./src/gqrx
       - name: Build app bundle
+        shell: micromamba-shell {0}
         run: ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
       - name: Notarize app bundle
         if: ${{ steps.secret-check.outputs.available == 'true' }}
