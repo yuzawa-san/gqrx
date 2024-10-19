@@ -37,6 +37,7 @@ jobs:
             soapysdr-module-remote
             volk
       - name: Install dependencies
+        shell: micromamba-shell {0}
         run: |
           uname -a
           which cmake
@@ -64,7 +65,7 @@ jobs:
           fetch-depth: 0
       - name: Configure
         shell: micromamba-shell {0}
-        run: mkdir build && cd build && cmake -DCMAKE_PREFIX_PATH=${{ steps.setup-micromamba.outputs.environment-path }} ..
+        run: mkdir build && cd build && CMAKE_PREFIX_PATH=${{ steps.setup-micromamba.outputs.environment-path }} cmake ..
       - name: Compile
         shell: micromamba-shell {0}
         working-directory: build
