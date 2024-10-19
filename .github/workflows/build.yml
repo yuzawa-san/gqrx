@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   macos:
     name: MacOS
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - name: Check for Secret availability
         id: secret-check
@@ -21,11 +21,6 @@ jobs:
         with:
           environment-name: gqrx
           create-args: >-
-            c-compiler
-            cxx-compiler
-            cmake
-            make
-            pkg-config
             gnuradio-core
             gnuradio-osmosdr
             libboost-headers
@@ -37,6 +32,8 @@ jobs:
             volk
       - name: Install dependencies
         run: |
+          uname -a
+          env
           brew update
           brew install dylibbundler qt@6 || true
       - name: Install Apple certificate
