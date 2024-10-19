@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   macos:
       name: MacOS
-      runs-on: macos-13
+      runs-on: macos-14
       steps:
         - name: Check for Secret availability
           id: secret-check
@@ -24,8 +24,6 @@ jobs:
             brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
             brew tap pothosware/homebrew-pothos
             brew install soapyremote
-            ls -R /opt/homebrew/Cellar/soapyremote
-            ls -R /usr/local/lib/SoapySDR
 
             cd /tmp
             git clone https://github.com/analogdevicesinc/libiio.git
@@ -46,7 +44,7 @@ jobs:
             make -j4
             sudo make install
 
-            ls -R /usr/local/lib/SoapySDR
+            ls -R /usr/local/lib/SoapySDR || true
             cd /tmp
             git clone https://github.com/pothosware/SoapyPlutoSDR.git
             cd SoapyPlutoSDR
@@ -55,7 +53,7 @@ jobs:
             cmake ..
             make -j4
             sudo make install
-            ls -R /usr/local/lib/SoapySDR
+            ls -R /usr/local/lib/SoapySDR || true
 
             cd /tmp
             sudo cp /Library/Frameworks/iio.framework/iio /usr/local/lib/libiio.dylib
