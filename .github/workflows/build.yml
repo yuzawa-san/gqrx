@@ -39,6 +39,7 @@ jobs:
       - name: Install dependencies
         run: |
           uname -a
+          which cmake
       - name: Install Apple certificate
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
@@ -62,7 +63,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Configure
-        run: mkdir build && cd build && cmake ..
+        run: mkdir build && cd build && cmake -DCMAKE_PREFIX_PATH=${{ steps.setup-micromamba.outputs.environment-path }} ..
       - name: Compile
         working-directory: build
         run: make -j4
