@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   macos:
       name: MacOS
-      runs-on: macos-13
+      runs-on: macos-14
       steps:
         - name: Check for Secret availability
           id: secret-check
@@ -44,6 +44,7 @@ jobs:
             make -j4
             sudo make install
 
+            find /usr/local -name 'libremoteSupport.so'
             ls -R /usr/local/lib/SoapySDR || true
             cd /tmp
             git clone https://github.com/pothosware/SoapyPlutoSDR.git
