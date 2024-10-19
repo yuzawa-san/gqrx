@@ -24,6 +24,7 @@ jobs:
             brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
             brew tap pothosware/homebrew-pothos
             brew install soapyremote
+            ls -R /opt/homebrew/Cellar/soapyremote
             ls -R /usr/local/lib/SoapySDR
 
             cd /tmp
