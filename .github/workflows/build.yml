@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 0
       - name: Configure
         shell: micromamba-shell {0}
-        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE  -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }} ..
+        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_PREFIX_PATH=${{ steps.setup-micromamba.outputs.environment-path }} -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }} ..
       - name: Compile
         shell: micromamba-shell {0}
         working-directory: build
