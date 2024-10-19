@@ -31,17 +31,14 @@ jobs:
             libboost-headers
             mesa-libgl-devel-cos6-x86_64
             pybind11
-            qt6-main
             soapysdr-module-lms7
             soapysdr-module-plutosdr
             soapysdr-module-remote
             volk
       - name: Install dependencies
-        shell: micromamba-shell {0}
         run: |
-          uname -a
-          which cmake
-          env
+          brew update
+          brew install dylibbundler qt@6 || true
       - name: Install Apple certificate
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
@@ -65,14 +62,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: Configure
-        shell: micromamba-shell {0}
-        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE ..
+        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_MODULE_PATH=${{ steps.setup-micromamba.outputs.environment-path }}:/usr/local:/usr ..
       - name: Compile
-        shell: micromamba-shell {0}
         working-directory: build
         run: make -j4 && otool -l ./src/gqrx
       - name: Build app bundle
-        shell: micromamba-shell {0}
         run: ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
       - name: Notarize app bundle
         if: ${{ steps.secret-check.outputs.available == 'true' }}
