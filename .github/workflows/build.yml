@@ -212,7 +212,7 @@ jobs:
       - name: Save artifact
         uses: actions/upload-artifact@v4
         with:
-          name: gqrx-${{ matrix.arch }}-${{ github.run_id }}
+          name: gqrx-mac-${{ matrix.arch }}-${{ github.run_id }}
           path: Gqrx-*.dmg
   windows:
     runs-on: windows-latest
