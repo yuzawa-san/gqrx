@@ -24,14 +24,6 @@ jobs:
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 python-setuptools six soapyremote uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
           brew install soapyplutosdr
-          # see https://apple.stackexchange.com/questions/437618/why-is-homebrew-installed-in-opt-homebrew-on-apple-silicon-macs
-          # if [ -d /opt/homebrew ]; then
-          #   sudo cp /opt/homebrew/lib/SoapySDR/modules*/libremoteSupport.so
-          # fi
-          #
-          #
-          ls -R /usr/local/lib/SoapySDR || true
-          ls -R /opt/homebrew/lib/SoapySDR || true
 
           cd /tmp
           git clone https://gitea.osmocom.org/sdr/gr-iqbal.git
