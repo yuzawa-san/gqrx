@@ -25,7 +25,8 @@ jobs:
           brew tap pothosware/homebrew-pothos
           brew install soapyremote -v
           mkdir -p /usr/local/lib/SoapySDR/modules0.8/
-          echo 'hello' > /usr/local/lib/SoapySDR/modules0.8/test.txt 
+          echo 'hello' > /usr/local/lib/SoapySDR/modules0.8/test.txt
+          ls -R /usr/local/lib/SoapySDR || true
 
           cd /tmp
           git clone https://github.com/analogdevicesinc/libiio.git
@@ -86,6 +87,9 @@ jobs:
           cmake -DCMAKE_CXX_FLAGS=-Wno-register ..
           LIBRARY_PATH=/usr/local/opt/icu4c/lib make -j4
           sudo make install
+          brew link soapyremote -v
+          ls -R /usr/local/lib/SoapySDR
+          brew unlink soapyremote -v && brew link soapyremote -v
           ls -R /usr/local/lib/SoapySDR
       - name: Install Apple certificate
         if: ${{ steps.secret-check.outputs.available == 'true' }}
