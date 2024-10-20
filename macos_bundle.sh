@@ -51,8 +51,13 @@ EOM
 
 cp build/src/gqrx Gqrx.app/Contents/MacOS
 cp resources/icons/gqrx.icns Gqrx.app/Contents/Resources
-cp /usr/local/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
-cp /usr/local/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
+# see https://apple.stackexchange.com/questions/437618/why-is-homebrew-installed-in-opt-homebrew-on-apple-silicon-macs
+SOAPYSDR_LIBS=/usr/local/lib/SoapySDR
+if [ -d /opt/homebrew/lib/SoapySDR ]; then
+    SOAPYSDR_LIBS=/opt/homebrew/lib/SoapySDR
+fi
+cp ${SOAPYSDR_LIBS}/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
+cp ${SOAPYSDR_LIBS}/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
 dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
