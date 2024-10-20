@@ -57,7 +57,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Configure
-        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX ..
+        run: mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=TRUE -DCMAKE_INSTALL_PREFIX=${{ steps.setup-micromamba.outputs.environment-path }} ..
       - name: Compile
         working-directory: build
         run: make -j4 && otool -L ./src/gqrx
