@@ -23,6 +23,8 @@ jobs:
           brew install --HEAD librtlsdr
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six soapyremote uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
+          # needed for libiio installation
+          pip install setuptools
           brew install soapyplutosdr
           # see https://apple.stackexchange.com/questions/437618/why-is-homebrew-installed-in-opt-homebrew-on-apple-silicon-macs
           # if [ -d /opt/homebrew ]; then
