@@ -24,6 +24,8 @@ jobs:
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
           brew install soapyremote -v
+          sudo find /usr -name 'libremoteSupport.so'
+          find . -name 'libremoteSupport.so'
           mkdir -p /usr/local/lib/SoapySDR/modules0.8/
           echo 'hello' > /usr/local/lib/SoapySDR/modules0.8/test.txt
           ls -R /usr/local/lib/SoapySDR || true
@@ -47,7 +49,6 @@ jobs:
           make -j4
           sudo make install
 
-          find /usr/local -name 'libremoteSupport.so'
           ls -R /usr/local/lib/SoapySDR || true
           cd /tmp
           git clone https://github.com/pothosware/SoapyPlutoSDR.git
@@ -91,6 +92,7 @@ jobs:
           ls -R /usr/local/lib/SoapySDR
           brew unlink soapyremote -v && brew link soapyremote -v
           ls -R /usr/local/lib/SoapySDR
+          find /
       - name: Install Apple certificate
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
