@@ -54,11 +54,11 @@ MACDEPLOYQT6=/usr/local/opt/qt@6/bin/macdeployqt
 if [ -f /opt/homebrew/opt/qt@6/bin/macdeployqt ]; then
     MACDEPLOYQT6=/opt/homebrew/opt/qt@6/bin/macdeployqt
 fi
-cp /*/*/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
-cp /*/*/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
+cp $MICROMAMBA_ROOT/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
+cp $MICROMAMBA_ROOT/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
-dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
+dylibbundler -s $MICROMAMBA_ROOT/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
 ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
     ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
