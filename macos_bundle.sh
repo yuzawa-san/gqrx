@@ -52,22 +52,22 @@ EOM
 cp build/src/gqrx Gqrx.app/Contents/MacOS
 cp resources/icons/gqrx.icns Gqrx.app/Contents/Resources
 # see https://apple.stackexchange.com/questions/437618/why-is-homebrew-installed-in-opt-homebrew-on-apple-silicon-macs
-BREW_ROOT=/usr/local
-if [ -d /opt/homebrew ]; then
-    BREW_ROOT=/opt/homebrew
+MACDEPLOYQT6=/usr/local/opt/qt@6/bin/macdeployqt
+if [ -f /opt/homebrew/opt/qt@6/bin/macdeployqt ]; then
+    MACDEPLOYQT6=/opt/homebrew/opt/qt@6/bin/macdeployqt
 fi
-cp ${BREW_ROOT}/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
-cp ${BREW_ROOT}/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
+cp /*/*/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
+cp /*/*/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
 
 
 dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
-${BREW_ROOT}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
+${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
-    ${BREW_ROOT}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
+    ${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
 else
-    ${BREW_ROOT}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite
+    ${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite
 fi
 
 for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/MacOS/gqrx
