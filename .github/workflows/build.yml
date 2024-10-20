@@ -21,9 +21,45 @@ jobs:
           sudo chown -R runner:admin /usr/local/
           brew update
           brew install --HEAD librtlsdr
-          brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 python-setuptools six soapyremote uhd qt@6 || true
-          brew tap pothosware/homebrew-pothos
-          brew install soapyplutosdr -v
+          brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six soapyremote uhd qt@6 || true
+
+          cd /tmp
+          git clone https://github.com/analogdevicesinc/libiio.git
+          cd libiio
+          git checkout v0.23
+          mkdir build
+          cd build
+          cmake ..
+          make -j4
+          sudo make install
+
+          cd /tmp
+          git clone https://github.com/analogdevicesinc/libad9361-iio.git
+          cd libad9361-iio
+          mkdir build
+          cd build
+          cmake ..
+          make -j4
+          sudo make install
+
+          cd /tmp
+          git clone https://github.com/pothosware/SoapyPlutoSDR.git
+          cd SoapyPlutoSDR
+          mkdir build
+          cd build
+          cmake ..
+          make -j4
+          sudo make install
+
+          cd /tmp
+          sudo cp /Library/Frameworks/iio.framework/iio /usr/local/lib/libiio.dylib
+          sudo install_name_tool -id "/usr/local/lib/libiio.dylib" /usr/local/lib/libiio.dylib
+          sudo cp /Library/Frameworks/ad9361.framework/ad9361 /usr/local/lib/libad9361.dylib
+          sudo install_name_tool -id "/usr/local/lib/libad9361.dylib" /usr/local/lib/libad9361.dylib
+          sudo install_name_tool -delete_rpath /Library/Frameworks /usr/local/lib/libad9361.dylib
+          sudo install_name_tool -change @rpath/iio.framework/Versions/0.23/iio /usr/local/lib/libiio.dylib /usr/local/lib/libad9361.dylib
+          sudo install_name_tool -change @rpath/iio.framework/Versions/0.23/iio /usr/local/lib/libiio.dylib /usr/local/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
+          sudo install_name_tool -change @rpath/ad9361.framework/Versions/0.2/ad9361 /usr/local/lib/libad9361.dylib /usr/local/lib/SoapySDR/modules0.*/libPlutoSDRSupport.so
 
           cd /tmp
           git clone https://gitea.osmocom.org/sdr/gr-iqbal.git
