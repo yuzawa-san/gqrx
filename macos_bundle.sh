@@ -63,11 +63,11 @@ chmod 644 Gqrx.app/Contents/soapy-modules/*
 
 
 dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
-${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
+${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
-    ${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
+    ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite -sign-for-notarization=$IDENTITY
 else
-    ${MACDEPLOYQT6}/opt/qt@6/bin/macdeployqt Gqrx.app -no-strip -always-overwrite
+    ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite
 fi
 
 for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/MacOS/gqrx
