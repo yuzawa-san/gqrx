@@ -23,7 +23,7 @@ jobs:
           brew install --HEAD librtlsdr
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 python-setuptools six soapyremote uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
-          brew install soapyplutosdr
+          brew install soapyplutosdr -v
 
           cd /tmp
           git clone https://gitea.osmocom.org/sdr/gr-iqbal.git
