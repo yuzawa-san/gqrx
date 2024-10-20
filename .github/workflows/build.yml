@@ -23,9 +23,8 @@ jobs:
           brew install --HEAD librtlsdr
           brew install airspy airspyhf boost dylibbundler gnuradio hackrf libbladerf libserialport portaudio pybind11 six uhd qt@6 || true
           brew tap pothosware/homebrew-pothos
-          brew install soapyremote -v
-          sudo find /usr -name 'libremoteSupport.so'
-          find . -name 'libremoteSupport.so'
+          brew install --build-from-source soapyremote -v
+          sudo find / -name 'libremoteSupport.so'
           mkdir -p /usr/local/lib/SoapySDR/modules0.8/
           echo 'hello' > /usr/local/lib/SoapySDR/modules0.8/test.txt
           ls -R /usr/local/lib/SoapySDR || true
