@@ -26,6 +26,7 @@ jobs:
             libboost-headers
             mesa-libgl-devel-cos6-x86_64
             pybind11
+            qt6-main
             soapysdr-module-lms7
             soapysdr-module-plutosdr
             soapysdr-module-remote
@@ -33,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           brew update
-          brew install dylibbundler qt@6 || true
+          brew install dylibbundler || true
       - name: Install Apple certificate
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
