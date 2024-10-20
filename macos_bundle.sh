@@ -50,10 +50,7 @@ EOM
 cp build/src/gqrx Gqrx.app/Contents/MacOS
 cp resources/icons/gqrx.icns Gqrx.app/Contents/Resources
 # see https://apple.stackexchange.com/questions/437618/why-is-homebrew-installed-in-opt-homebrew-on-apple-silicon-macs
-MACDEPLOYQT6=/usr/local/opt/qt@6/bin/macdeployqt
-if [ -f /opt/homebrew/opt/qt@6/bin/macdeployqt ]; then
-    MACDEPLOYQT6=/opt/homebrew/opt/qt@6/bin/macdeployqt
-fi
+MACDEPLOYQT6=$MICROMAMBA_ROOT/lib/qt6/bin/macdeployqt
 cp $MICROMAMBA_ROOT/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
 cp $MICROMAMBA_ROOT/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
