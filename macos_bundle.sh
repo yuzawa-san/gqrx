@@ -14,8 +14,6 @@ mkdir -p Gqrx.app/Contents/soapy-modules
 <dict>
   <key>NSPrincipalClass</key>
   <string>NSApplication</string>
-  <key>CFBundleGetInfoString</key>
-  <string>Gqrx</string>
   <key>CFBundleExecutable</key>
   <string>gqrx</string>
   <key>CFBundleIdentifier</key>
@@ -60,8 +58,6 @@ cp /*/*/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modu
 cp /*/*/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
-
-
 dylibbundler -s /usr/local/opt/icu4c/lib/ -od -b -x Gqrx.app/Contents/MacOS/gqrx -x Gqrx.app/Contents/soapy-modules/libPlutoSDRSupport.so -x Gqrx.app/Contents/soapy-modules/libremoteSupport.so -d Gqrx.app/Contents/libs/
 ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite # TODO: Remove macdeployqt workaround
 if [ "$1" = "true" ]; then
@@ -70,7 +66,7 @@ else
     ${MACDEPLOYQT6} Gqrx.app -no-strip -always-overwrite
 fi
 
-for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/MacOS/gqrx
+for f in Gqrx.app/Contents/libs/*.dylib Gqrx.app/Contents/soapy-modules/*.so Gqrx.app/Contents/Frameworks/*.framework Gqrx.app/Contents/Frameworks/*.dylib Gqrx.app/Contents/MacOS/gqrx
 do
     if [ "$1" = "true" ]; then
         codesign --force --verify --verbose --timestamp --options runtime --entitlements /tmp/Entitlements.plist --sign $IDENTITY $f
