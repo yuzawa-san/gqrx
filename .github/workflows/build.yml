@@ -23,6 +23,7 @@ jobs:
           create-args: >-
             gnuradio-core
             gnuradio-osmosdr
+            gmp
             libboost-headers
             mesa-libgl-devel-cos6-x86_64
             pybind11
