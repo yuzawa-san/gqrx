@@ -131,7 +131,7 @@ jobs:
         working-directory: build
         run: make -j4
       - name: Build app bundle
-        run: ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
+        run: MICROMAMBA_ROOT=${{ steps.setup-micromamba.outputs.environment-path }} ./macos_bundle.sh ${{ steps.secret-check.outputs.available }}
       - name: Notarize app bundle
         if: ${{ steps.secret-check.outputs.available == 'true' }}
         env:
