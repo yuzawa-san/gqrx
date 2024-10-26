@@ -1594,13 +1594,12 @@ void CPlotter::draw(bool newData)
             qreal yFillMax = 0;
             for (i = 0; i < npts; i++)
             {
-                QPointF yFill = m_PlotMode == PLOT_MODE_MAX ? m_maxLineBuf[i] : m_avgLineBuf[i];
-                m_fillLineBuf[i] = QLineF(yFill, QPointF(yFill.x(), plotHeight));
-                yFillMax = std::max(yFillMax, yFill.y());
+                const QPointF point = m_PlotMode == PLOT_MODE_MAX ? m_maxLineBuf[i] : m_avgLineBuf[i];
+                const qreal yFill = point.y();
+                yFillMax = std::max(yFillMax, yFill);
+                painter2.fillRect(QRectF(point.x(), yFill, 1.0, yFillMax - yFill), m_FftFillCol);
             }
-            painter2.setPen(QPen(m_FftFillCol));
-            painter2.drawLines(m_fillLineBuf, npts);
-            painter2.fillRect(QRectF(xmin, yFillMax, npts, plotHeight - yFillMax), QBrush(m_FftFillCol));
+            painter2.fillRect(QRectF(xmin, yFillMax, npts, plotHeight - yFillMax), m_FftFillCol);
         }
 
         if (!abPolygon.isEmpty())
@@ -1634,7 +1633,7 @@ void CPlotter::draw(bool newData)
         // Min hold
         if (m_MinHoldActive)
         {
-            // Show min(avg) except when showing only max on scree
+            // Show min(avg) except when showing only max on screen
             for (i = 0; i < npts; i++)
             {
                 const int ix = i + xmin;
@@ -1655,10 +1654,10 @@ void CPlotter::draw(bool newData)
         {
             for (i = 0; i < npts; i++)
             {
-                m_fillLineBuf[i] = QLineF(m_maxLineBuf[i], m_avgLineBuf[i]);
+                const QPointF maxPoint = m_maxLineBuf[i];
+                const qreal yMax = maxPoint.y();
+                painter2.fillRect(QRectF(maxPoint.x(), yMax, 1.0, m_avgLineBuf[i].y() - yMax), m_FilledModeFillCol);
             }
-            painter2.setPen(QPen(m_FilledModeFillCol));
-            painter2.drawLines(m_fillLineBuf, npts);
         }
 
         if (doMaxLine)
