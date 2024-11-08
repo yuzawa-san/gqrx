@@ -50,9 +50,9 @@ EOM
 cp build/src/gqrx Gqrx.app/Contents/MacOS
 cp resources/icons/gqrx.icns Gqrx.app/Contents/Resources
 PREFIX=$(brew --prefix)
-echo "Using prefix ${PREFIX}"
 MACDEPLOYQT6=${PREFIX}/opt/qt@6/bin/macdeployqt
-cp ${PREFIX}/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
+# NOTE: PlutoSDR is built locally, so it will not in the brew path
+cp /usr/local/lib/SoapySDR/modules*/libPlutoSDRSupport.so Gqrx.app/Contents/soapy-modules
 cp ${PREFIX}/lib/SoapySDR/modules*/libremoteSupport.so Gqrx.app/Contents/soapy-modules
 chmod 644 Gqrx.app/Contents/soapy-modules/*
 
